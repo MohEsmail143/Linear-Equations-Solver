@@ -1,17 +1,14 @@
-import tkinter as tk
-from tkinter import ttk
-from tkinter import font
-from unittest import result
-import numpy as np
-import matplotlib as plt
-from tkinter import messagebox
-from tkinter import OptionMenu
+import time
 from tkinter import Toplevel
+from tkinter import messagebox
+from tkinter import ttk
+
+import numpy as np
+
 import constants
 from methods.equation_solver import EquationSolver
 from screens.results_screen import ResultsScreen
 from utils.parser import EquationParser
-import time
 
 
 class EquationEntryScreen(Toplevel):
@@ -27,7 +24,7 @@ class EquationEntryScreen(Toplevel):
         self.window_height = 200 + numOfEquations * 50
 
         if metodName == constants.METHODS_NAME[3]:
-            self.window_height += 50*numOfEquations
+            self.window_height += 50 * numOfEquations
 
         # get the screen dimension
         screen_width = self.winfo_screenwidth()
@@ -45,24 +42,16 @@ class EquationEntryScreen(Toplevel):
         mediumFont = (FONT, 16)
         smallFont = (FONT, 14)
 
-        welcomeLabel = ttk.Label(
-            self,
-            text="Equation Entry for {} method".format(self.methodName),
-            font=largeFont,
-        )
+        welcomeLabel = ttk.Label(self, text="Equation Entry for {} method".format(self.methodName), font=largeFont, )
 
         # command = lambda : self.plot_function())
 
         # welcomeLabel.pack()
-        welcomeLabel.grid(
-            row=0, column=0, padx=8, pady=8, sticky="W", columnspan=2, rowspan=1
-        )
+        welcomeLabel.grid(row=0, column=0, padx=8, pady=8, sticky="W", columnspan=2, rowspan=1)
         self.functions_entry = []
 
         for i in range(numOfEquations):
-            funLabel = ttk.Label(
-                self, text="Function {}".format(i + 1), font=mediumFont
-            )
+            funLabel = ttk.Label(self, text="Function {}".format(i + 1), font=mediumFont)
             funEntry = ttk.Entry(self, width=20, font=smallFont)
 
             self.functions_entry.append(funEntry)
@@ -90,21 +79,18 @@ class EquationEntryScreen(Toplevel):
         button.bind("<Button>", lambda e: self.goButtonCallback())
 
         self.initial_values_entries = []
-        i=0
+        i = 0
 
         if self.methodName == constants.METHODS_NAME[3]:
             # TODO : Arguments name
             for i in range(numOfEquations):
-                
                 arg1Label = ttk.Label(self, text="x{}".format(i), font=mediumFont)
                 arg1Entry = ttk.Entry(self, width=20, font=smallFont)
-                arg1Label.grid(row=numOfEquations + i+4, column=0, padx=10, pady=10)
-                arg1Entry.grid(row=numOfEquations + i+4, column=1, padx=10, pady=10)
+                arg1Label.grid(row=numOfEquations + i + 4, column=0, padx=10, pady=10)
+                arg1Entry.grid(row=numOfEquations + i + 4, column=1, padx=10, pady=10)
                 self.initial_values_entries.append(arg1Entry)
 
-           
-
-        button.grid(row=numOfEquations + i+5, column=1, padx=10, pady=10)
+        button.grid(row=numOfEquations + i + 5, column=1, padx=10, pady=10)
 
     def getEpsilon(self):
         try:
@@ -118,7 +104,6 @@ class EquationEntryScreen(Toplevel):
         for i in range(self.numOfEquations):
             initial_values.append(float(self.initial_values_entries[i].get()))
         return initial_values
-
 
     def getMethodName(self):
         return self.methodName
@@ -150,11 +135,11 @@ class EquationEntryScreen(Toplevel):
                 messagebox.showerror("Error", "All the entries must be filled")
                 return
         try:
-            A,B,varaibles = EquationParser().parseFunctions(self.getFunctions())
+            A, B, varaibles = EquationParser().parseFunctions(self.getFunctions())
         except:
             messagebox.showerror("Error", "Invalid Equation")
             return
-        
+
         results = []
 
         try:
@@ -163,38 +148,34 @@ class EquationEntryScreen(Toplevel):
                 # Gaussian-elimination
                 # TODO
                 solver = EquationSolver()
-                
-                start_time = time.time()
-                results = solver.gauss_elimination(A,B, len(varaibles))
-                results = np.append(results , [0,time.time() - start_time], axis=0)
 
+                start_time = time.time()
+                results = solver.gauss_elimination(A, B, len(varaibles))
+                results = np.append(results, [0, time.time() - start_time], axis=0)
 
             if self.getMethodName() == constants.METHODS_NAME[1]:
                 # LU decomposition
                 # TODO
                 solver = EquationSolver()
-                
+
                 start_time = time.time()
                 results = solver.lu_decomp(np.concatenate((A, B), axis=1), len(varaibles))
                 # print('resulst = ',results)
                 # reshape into 1d
-                results = np.reshape(results,(len(results),))
-                
-                results = np.append(results , [0,time.time() - start_time], axis=0)
-                # print('resulst 2= ',results)
+                results = np.reshape(results, (len(results),))
 
-                
+                results = np.append(results, [0, time.time() - start_time], axis=0)  # print('resulst 2= ',results)
+
             if self.getMethodName() == constants.METHODS_NAME[2]:
                 # Gaussian-Jordan
                 # TODO
-                
+
                 solver = EquationSolver()
-        
+
                 start_time = time.time()
                 results = solver.Gauss_jordan(np.concatenate((A, B), axis=1), len(varaibles))
                 # print('resulst = ',results)
-                results = np.append(results , [0,time.time() - start_time], axis=0)
-                # print('resulst 2= ',results)
+                results = np.append(results, [0, time.time() - start_time], axis=0)  # print('resulst 2= ',results)
 
             if self.getMethodName() == constants.METHODS_NAME[3]:
                 # Gauss-Seidel
@@ -205,13 +186,13 @@ class EquationEntryScreen(Toplevel):
                 x = np.array(self.getInitailValues())
 
                 start_time = time.time()
-                results,iterations = solver.gauss_seidal(A,B,x  , self.getEpsilon() ,  self.getNumberOfIetrations())
-            
-                results = np.append(results , [iterations,time.time() - start_time], axis=0)
+                results, iterations = solver.gauss_seidal(A, B, x, self.getEpsilon(), self.getNumberOfIetrations())
+
+                results = np.append(results, [iterations, time.time() - start_time], axis=0)
 
 
         except:
             messagebox.showerror("Error", "An error occured")
             return
 
-        return ResultsScreen(self, self.getMethodName(), self.numOfEquations , varaibles , results)
+        return ResultsScreen(self, self.getMethodName(), self.numOfEquations, varaibles, results)

@@ -10,39 +10,24 @@ class EquationParser:
         self.B = None
         self.variables = None
 
+    def replace_operations_from_string(self, func):
 
-    
-    def replace_operations_from_string(self,func):
+        func = func.replace(" ", "").lower()
 
-        func = func.replace(" ","").lower()
-        
-        op = {
-            'sin':'np.sin',
-            'cos':'np.cos',
-            'tan':'np.tan',
-            'log':'np.log',
-            'exp':'np.exp',
-            'sqrt':'np.sqrt',
-            '^':'**',
-            'ln':'np.log',
-            'pi':'np.pi',
-            }
+        op = {'sin': 'np.sin', 'cos': 'np.cos', 'tan': 'np.tan', 'log': 'np.log', 'exp': 'np.exp', 'sqrt': 'np.sqrt',
+            '^': '**', 'ln': 'np.log', 'pi': 'np.pi', }
         for i in op:
-            func = func.replace(i,op[i])
+            func = func.replace(i, op[i])
 
         return func
 
-    
-
-    def parseFunctions(self,functions):
+    def parseFunctions(self, functions):
         variables = set()
 
         for line in functions:
             for c in line:
                 if c.isalpha():
                     variables.add(c)
- 
-
 
         variables = list(variables)
         variables.sort()
@@ -65,38 +50,31 @@ class EquationParser:
 
             for j, c in enumerate(variables):
                 A[i, j] = expr.coeff(c)
-            
+
             # get last number b in from the equation
-            
+
             expr = Poly(expr, symbols(", ".join(variables)))
 
             nums = expr.coeffs()
             # print('nums' , nums)
-            
-            
+
             # print('l = ',expr.free_symbols)
-            if len(expr.free_symbols) +1 == len(nums):
+            if len(expr.free_symbols) + 1 == len(nums):
                 B[i] = -1 * nums.pop()
             else:
-                B[i] = 0
-            # print('B[i] = ',B[i])
+                B[i] = 0  # print('B[i] = ',B[i])
 
-            # if(len(B) != len(variables)):
-            #     B[i]
-        
-        
+            # if(len(B) != len(variables)):  #     B[i]
+
         self.init_values = None
-        
-        
+
         self.A = A
         self.B = B
         self.variables = variables
 
-        return A,B,variables
+        return A, B, variables
 
-
-
-    def readFunctionFromFile(self,fileName):
+    def readFunctionFromFile(self, fileName):
         input_file = open(fileName, "r")
         lines = input_file.readlines()
         input_file.close()
@@ -108,7 +86,6 @@ class EquationParser:
             for c in line:
                 if c.isalpha():
                     variables.add(c)
-
 
         variables = list(variables)
         variables.sort()
@@ -132,17 +109,16 @@ class EquationParser:
 
             for j, c in enumerate(variables):
                 A[i, j] = expr.coeff(c)
-            
-            
+
             expr = Poly(expr, symbols(", ".join(variables)))
-            
+
             nums = expr.coeffs()
 
-            if len(expr.free_symbols) +1 == len(nums):
+            if len(expr.free_symbols) + 1 == len(nums):
                 B[i] = -1 * nums.pop()
             else:
                 B[i] = 0
-        
+
         self.init_values = None
 
         if "seidel" in method_name.lower():
@@ -150,27 +126,16 @@ class EquationParser:
             self.init_values = init_values
 
             # return method_name , num_of_equations, A, B, variables, init_values  
-        
+
         self.method_name = method_name.strip()
         self.num_of_equations = num_of_equations
         self.A = A
         self.B = B
         self.variables = variables
 
-        
-
         # return method_name , num_of_equations, A, B, variables
 
 
 if __name__ == "__main__":
-    EquationParser().parseFunctions(['x+y-0' , 'y-1'])
-    # filename = input("Enter name of input file: ")
-    # fp = EquationParser(filename)
-    # fp.readFunctionFromFile(filename)
-    # print(fp.method_name)
-    # print(fp.num_of_equations)
-    # print(fp.A)
-    # print(fp.B)
-    # print(fp.variables)
-
-
+    EquationParser().parseFunctions(['x+y-0',
+                                     'y-1'])  # filename = input("Enter name of input file: ")  # fp = EquationParser(filename)  # fp.readFunctionFromFile(filename)  # print(fp.method_name)  # print(fp.num_of_equations)  # print(fp.A)  # print(fp.B)  # print(fp.variables)

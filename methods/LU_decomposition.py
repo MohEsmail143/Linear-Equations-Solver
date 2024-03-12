@@ -1,8 +1,6 @@
 # import numpy
 
 
-
-
 # def lu_decomp(a, b, n, x, tol, er):
 #     s = numpy.zeros(shape=(n, 1))
 #     o = numpy.zeros(shape=(n, 1))
